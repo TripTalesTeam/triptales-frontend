@@ -14,7 +14,7 @@ struct LoginFormContent: View {
     @State private var password = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var isLoggedIn = false
+    @AppStorage("isLoggedIn") var isLoggedIn = false
     @State private var isLoading = false
     
     @AppStorage("token") var token = ""

@@ -24,7 +24,7 @@ struct RegisterFormContent: View {
     @State private var profileImage = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var isRegistered = false
+    @AppStorage("isLoggedIn") var isRegistered = false
     
     @AppStorage("token") var token = ""
     @AppStorage("userID") var userID = ""
