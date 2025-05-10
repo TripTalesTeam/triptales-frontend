@@ -234,12 +234,13 @@ struct FeedView: View {
         VStack(spacing: 0) {
             // MARK: Header
             HStack {
-                Image("profile")
+                Image(systemName: "person.circle.fill")
                     .resizable()
                     .scaledToFill()
                     .frame(width: 40, height: 40)
                     .clipShape(Circle())
                     .padding(.leading)
+                    .foregroundColor(.gray)
 
                 VStack(alignment: .leading) {
                     Text("Welcome To Your Journal !")
@@ -306,20 +307,19 @@ struct FeedView: View {
                                 .frame(width: 350, height: 380)
                                 .cornerRadius(16)
                                 .clipped()
-
-                                Image("profile")
-                                    .resizable()
-                                    .frame(width: 36, height: 36)
-                                    .clipShape(Circle())
-                                    .padding(8)
                             }
 
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
-                                    Text(trip.title)
-                                        .font(.headline)
-                                        .foregroundColor(.black)
-                                        .bold()
+                                    
+                                    
+                                    HStack {
+                                        Image(systemName: "person.circle.fill")
+                                            .foregroundColor(.gray)
+                                        Text(trip.user.username)
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
                                     Spacer()
                                     Button(action: {
                                         if bookmarkedTripIDs.contains(trip.id) {
@@ -346,9 +346,12 @@ struct FeedView: View {
                                             .foregroundColor(bookmarkedTripIDs.contains(trip.id) ? .yellow : .gray)
                                     }
                                     .buttonStyle(PlainButtonStyle())
-
-
                                 }
+                                    Text(trip.title)
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                        .bold()
+
 
                                 Text(trip.description)
                                     .font(.subheadline)
