@@ -110,6 +110,115 @@ class FeedViewModel: ObservableObject {
     }
 }
 
+func bookmarkTrip(tripId: String, token: String, completion: @escaping (Bool) -> Void) {
+    guard let url = URL(string: "https://www.breezejirasak.com/api/bookmarks") else {
+        completion(false)
+        return
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+    let body: [String: Any] = ["trip_id": tripId]
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+    
+    // Create a custom session configuration
+    let config = URLSessionConfiguration.default
+    config.httpAdditionalHeaders = ["Authorization": "Bearer \(token)"]
+    
+    // Create a session with this configuration
+    let session = URLSession(configuration: config)
+
+    session.dataTask(with: request) { data, response, error in
+        DispatchQueue.main.async {
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Status code:", httpResponse.statusCode)
+
+                if (200...299).contains(httpResponse.statusCode) {
+                    completion(true)
+                } else {
+                    print("Response body:", String(data: data ?? Data(), encoding: .utf8) ?? "No body")
+                    completion(false)
+                }
+            } else {
+                print("No valid response.")
+                completion(false)
+            }
+        }
+    }.resume()
+}
+
+
+func unbookmarkTrip(tripId: String, token: String,completion: @escaping (Bool) -> Void) {
+    guard let url = URL(string: "https://www.breezejirasak.com/api/bookmarks/\(tripId)") else {
+        completion(false)
+        return
+    }
+
+    var request = URLRequest(url: url)
+    
+    // Set essential headers
+    request.httpMethod = "DELETE"
+    
+    // Add the authorization header with no modifications
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    
+    // Create a custom session configuration
+    let config = URLSessionConfiguration.default
+    config.httpAdditionalHeaders = ["Authorization": "Bearer \(token)"]
+    
+    // Create a session with this configuration
+    let session = URLSession(configuration: config)
+
+    session.dataTask(with: request) { _, response, error in
+        DispatchQueue.main.async {
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+    }.resume()
+}
+
+func fetchBookmarkedTrips(token: String, completion: @escaping (Set<String>) -> Void) {
+    guard let url = URL(string: "https://www.breezejirasak.com/api/bookmarks") else {
+        completion([])
+        return
+    }
+    
+    var request = URLRequest(url: url)
+    
+    // Set essential headers
+    request.httpMethod = "GET"
+    
+    // Add the authorization header with no modifications
+    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    
+    // Create a custom session configuration
+    let config = URLSessionConfiguration.default
+    config.httpAdditionalHeaders = ["Authorization": "Bearer \(token)"]
+    
+    // Create a session with this configuration
+    let session = URLSession(configuration: config)
+
+    session.dataTask(with: url) { data, response, error in
+        DispatchQueue.main.async {
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+                completion([])
+                return
+            }
+
+            let tripIDs = Set(json.compactMap { $0["trip_id"] as? String })
+            completion(tripIDs)
+        }
+    }.resume()
+}
+
 // MARK: - FeedView
 
 struct FeedView: View {
@@ -118,6 +227,8 @@ struct FeedView: View {
 
     @StateObject private var viewModel = FeedViewModel()
     @State private var selectedCountry = ""
+    @State private var bookmarkedTripIDs: Set<String> = []
+
 
     var body: some View {
         VStack(spacing: 0) {
@@ -149,89 +260,117 @@ struct FeedView: View {
 
             // MARK: Country Selector
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
-                    ForEach(viewModel.countries, id: \.self) { country in
-                        VStack {
-                            AsyncImage(url: URL(string: country.country_image)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } placeholder: {
-                                Color.gray.opacity(0.3)
+                    HStack(spacing: 20) {
+                        ForEach(viewModel.countries, id: \.self) { country in
+                            VStack {
+                                AsyncImage(url: URL(string: country.country_image)) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    Color.gray.opacity(0.3)
+                                }
+                                .frame(width: 70, height: 70)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                
+                                Text(country.name)
+                                    .font(.caption)
+                                    .foregroundColor(.black)
                             }
-                            .frame(width: 70, height: 70)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-
-                            Text(country.name)
-                                .font(.caption)
-                                .foregroundColor(.black)
-                        }
-                        .onTapGesture {
-                            if selectedCountry == country.name {
-                                selectedCountry = ""
-                            } else {
-                                selectedCountry = country.name
+                            .onTapGesture {
+                                if selectedCountry == country.name {
+                                    selectedCountry = ""
+                                } else {
+                                    selectedCountry = country.name
+                                }
+                                viewModel.fetchTrips(for: selectedCountry, token: token)
                             }
-                            viewModel.fetchTrips(for: selectedCountry, token: token)
                         }
-                    }
                 }
                 .padding(.horizontal)
             }
 
-            // MARK: Trip Cards
-            ScrollView {
-                ForEach(viewModel.trips) { trip in
-                    VStack(alignment: .leading) {
-                        ZStack(alignment: .topLeading) {
-                            AsyncImage(url: URL(string: trip.image)) { image in
-                                image
+            // MARK: Trip Cards - Carousel
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    ForEach(viewModel.trips) { trip in
+                        VStack(alignment: .leading) {
+                            ZStack(alignment: .topLeading) {
+                                AsyncImage(url: URL(string: trip.image)) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    Color.gray.opacity(0.3)
+                                }
+                                .frame(width: 350, height: 380)
+                                .cornerRadius(16)
+                                .clipped()
+
+                                Image("profile")
                                     .resizable()
-                            } placeholder: {
-                                Color.gray.opacity(0.3)
+                                    .frame(width: 36, height: 36)
+                                    .clipShape(Circle())
+                                    .padding(8)
                             }
-                            .frame(height: 220)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(trip.title)
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                        .bold()
+                                    Spacer()
+                                    Button(action: {
+                                        if bookmarkedTripIDs.contains(trip.id) {
+                                            // UNBOOKMARK: Send DELETE
+                                            unbookmarkTrip(tripId: trip.id, token: token) { success in
+                                                if success {
+                                                    bookmarkedTripIDs.remove(trip.id)
+                                                } else {
+                                                    print("Failed to remove bookmark.")
+                                                }
+                                            }
+                                        } else {
+                                            // BOOKMARK: Send POST
+                                            bookmarkTrip(tripId: trip.id, token: token) { success in
+                                                if success {
+                                                    bookmarkedTripIDs.insert(trip.id)
+                                                } else {
+                                                    print("Failed to bookmark trip.")
+                                                }
+                                            }
+                                        }
+                                    }) {
+                                        Image(systemName: bookmarkedTripIDs.contains(trip.id) ? "bookmark.fill" : "bookmark")
+                                            .foregroundColor(bookmarkedTripIDs.contains(trip.id) ? .yellow : .gray)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+
+
+                                }
+
+                                Text(trip.description)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+
+                                HStack {
+                                    Image(systemName: "mappin.and.ellipse")
+                                        .foregroundColor(.gray)
+                                    Text(trip.country.name)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            .padding()
+                            .background(Color.white)
                             .cornerRadius(16)
-                            .clipped()
-
-                            Image("profile")
-                                .resizable()
-                                .frame(width: 36, height: 36)
-                                .clipShape(Circle())
-                                .padding(8)
+                            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 5)
                         }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(trip.title)
-                                    .font(.headline)
-                                    .foregroundColor(.black)
-                                    .bold()
-                                Spacer()
-                                Image(systemName: "bookmark.fill")
-                                    .foregroundColor(.yellow)
-                            }
-
-                            Text(trip.description)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-
-                            HStack {
-                                Image(systemName: "mappin.and.ellipse")
-                                    .foregroundColor(.gray)
-                                Text(trip.country.name)
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(16)
-                        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 5)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
                 }
+                .padding(.horizontal)
+                .padding(.top, 16)
             }
 
             Spacer()
@@ -239,6 +378,9 @@ struct FeedView: View {
         .onAppear {
             viewModel.fetchCountries(token: token)
             viewModel.fetchTrips(for: selectedCountry, token: token)
+            fetchBookmarkedTrips(token: token) { fetchedIDs in
+                self.bookmarkedTripIDs = fetchedIDs
+            }
         }
         .background(Color(red: 0.98, green: 0.96, blue: 0.93))
         .edgesIgnoringSafeArea(.bottom)
