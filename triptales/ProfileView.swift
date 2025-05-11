@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Main Profile View
 struct ProfileView: View {
     @AppStorage("username") var username: String = ""
     @AppStorage("token") var token: String = ""
@@ -14,111 +15,150 @@ struct ProfileView: View {
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
     @State private var showLogoutAlert = false
     @EnvironmentObject var session: SessionManager
-    
+    @State private var showProfilePage = false
+    @AppStorage("profileImageUrl") var profileImageUrl = ""
+    @State private var profileImage: Image? = nil
+
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Color(red: 1.0, green: 0.94, blue: 0.92)
-                .ignoresSafeArea()
+        NavigationView {
+            ZStack(alignment: .bottom) {
+                Color(red: 1.0, green: 0.94, blue: 0.92)
+                    .ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 20) {
-                // Top Bar
-                HStack {
-                    Image(systemName: "person.circle.fill") // Placeholder
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                        .foregroundColor(.gray)
-                    
-                    VStack(alignment: .leading) {
-                        Text("Welcome To Your Journal !")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("Breezy")
-                            .font(.headline)
-                            .bold()
-                            .foregroundColor(.black)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "bell")
-                        .font(.title3)
-                        .foregroundColor(.gray)
-                }
-                .padding()
-
-                // Option List
-                VStack(spacing: 20) {
-                    ProfileRow(icon: "person.crop.circle", label: "Edit Profile", destination: .editProfile)
-                    
-                    Divider()
-                    
-                    ProfileRow(icon: "bookmark", label: "Bookmark", destination: .bookmarks)
-                    
-                    Divider()
-                    
-                    ProfileRow(icon: "person.2.fill", label: "Friends", destination: .friends)
-                    
-                    Divider()
-                    
-                    // Logout row with custom action
-                    Button(action: {
-                        showLogoutAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "arrowshape.turn.up.left.fill")
-                                .font(.title2)
-                                .foregroundColor(.gray)
-                            Text("Logout")
-                                .font(.body)
-                                .foregroundColor(.black)
-                            Spacer()
-                            Image(systemName: "chevron.right")
+                VStack(alignment: .leading, spacing: 20) {
+                    // Top Bar
+                    HStack {
+                        if let image = profileImage {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 50, height: 50)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
                                 .foregroundColor(.gray)
                         }
-                        .padding(.vertical, 10)
+
+                        VStack(alignment: .leading) {
+                            Text("Welcome To Your Journal !")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                            Text(username)
+                                .font(.headline)
+                                .bold()
+                                .foregroundColor(.black)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "bell")
+                            .font(.title3)
+                            .foregroundColor(.gray)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .padding()
+                    .onAppear {
+                        loadImageFromURL()
+                    }
+
+                    // Profile Options
+                    VStack(spacing: 20) {
+                        // Edit Profile Navigation
+                        NavigationLink(destination: EditProfileView()) {
+                            ButtonRow(icon: "person.crop.circle", label: "Edit Profile", action: {})
+                        }
+
+                        Divider()
+
+                        // Bookmark Navigation
+                        NavigationLink(destination: EmptyView()) {
+                            ButtonRow(icon: "bookmark", label: "Bookmark", action: {})
+                        }
+
+                        Divider()
+
+                        // Friends Navigation
+                        NavigationLink(destination: EmptyView()) {
+                            ButtonRow(icon: "person.2.fill", label: "Friends", action: {})
+                        }
+
+                        Divider()
+
+                        // Logout Button
+                        Button(action: {
+                            showLogoutAlert = true
+                        }) {
+                            HStack {
+                                Image(systemName: "arrowshape.turn.up.left.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                                Text("Logout")
+                                    .font(.body)
+                                    .foregroundColor(.black)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 10)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .padding(.horizontal)
+
+                    Spacer()
                 }
-                .padding(.horizontal)
 
-                Spacer()
+                // Bottom Decoration
+                VStack {
+                    Spacer()
+                    Circle()
+                        .fill(Color.orange)
+                        .scaleEffect(x: 2.0, y: 1.0)
+                        .frame(height: 200)
+                        .offset(y: 100)
+                }
+                .ignoresSafeArea()
+            }
+            .navigationBarBackButtonHidden(true)
+            .alert(isPresented: $showLogoutAlert) {
+                Alert(
+                    title: Text("Logout"),
+                    message: Text("Are you sure you want to logout?"),
+                    primaryButton: .destructive(Text("Logout")) {
+                        session.logout()
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+        }
+    }
+    func loadImageFromURL() {
+        guard let url = URL(string: profileImageUrl), !profileImageUrl.isEmpty else { return }
+
+        // Download image on background thread
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data,
+                  let uiImage = UIImage(data: data) else {
+                return
             }
 
-            // Curved Bottom Background
-            VStack(spacing: 0) {
-                Spacer()
-                Circle()
-                    .fill(Color.orange)
-                    .scaleEffect(x: 2.0, y: 1.0)
-                    .frame(height: 200)
-                    .offset(y: 100)
+            // Update UI on the main thread
+            DispatchQueue.main.async {
+                profileImage = Image(uiImage: uiImage)
             }
-            .ignoresSafeArea()
-        }
-        .navigationTitle("Profile")
-        .alert(isPresented: $showLogoutAlert) {
-            Alert(
-                title: Text("Logout"),
-                message: Text("Are you sure you want to logout?"),
-                primaryButton: .destructive(Text("Logout")) {
-                    // Perform logout action
-                    session.logout()
-                },
-                secondaryButton: .cancel()
-            )
-        }
+        }.resume()
     }
 }
 
-// MARK: - Profile Row Component
-struct ProfileRow: View {
+// MARK: - Reusable Row Button
+struct ButtonRow: View {
     let icon: String
     let label: String
-    let destination: ProfileDestination
-    
+    let action: () -> Void
+
     var body: some View {
-        NavigationLink(destination: destinationView()) {
+        Button(action: action) {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
@@ -132,48 +172,6 @@ struct ProfileRow: View {
             }
             .padding(.vertical, 10)
         }
-        .buttonStyle(PlainButtonStyle()) // Removes the default NavigationLink styling
-    }
-    
-    @ViewBuilder
-    private func destinationView() -> some View {
-        switch destination {
-        case .editProfile:
-            EmptyView()
-//            EditProfileView()
-        case .bookmarks:
-            EmptyView()
-//            BookmarksView()
-        case .friends:
-            EmptyView()
-//            FriendsView()
-        case .logout:
-            EmptyView() // Logout is handled differently
-        }
-    }
-}
-
-// Enum to represent different profile destinations
-enum ProfileDestination {
-    case editProfile
-    case bookmarks
-    case friends
-    case logout
-}
-
-// MARK: - Tab Bar Item
-struct TabBarItem: View {
-    let icon: String
-    let label: String
-    var isSelected: Bool = false
-    
-    var body: some View {
-        VStack {
-            Image(systemName: icon)
-                .foregroundColor(isSelected ? .blue : .black)
-            Text(label)
-                .font(.caption)
-                .foregroundColor(isSelected ? .blue : .black)
-        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

@@ -45,6 +45,7 @@ struct RegisterFormContent: View {
                     .font(.system(size: 28, weight: .bold))
                     .padding(.top, 180)
                     .padding(.bottom, 10)
+                    .foregroundColor(.black)
                 
                 Group {
                     CustomInputField(title: "Username", text: $username)
@@ -77,7 +78,7 @@ struct RegisterFormContent: View {
                     NavigationLink(destination: LoginView()) {
                         Text("Login?")
                             .font(.callout)
-                            .foregroundColor(.white)
+                            .foregroundColor(.blue)
                     }
                     .padding(.trailing, 24)
                     .padding(.top, 8)
@@ -98,6 +99,7 @@ struct RegisterFormContent: View {
         .alert(isPresented: $showAlert) {
             Alert(title: Text("Registeration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
+        .background(Color(red: 0.98, green: 0.96, blue: 0.93))
         .navigationBarHidden(true)
         // Navigation link is hidden but activated when login is successful
         .background(
@@ -123,6 +125,7 @@ struct RegisterFormContent: View {
                     SecureField(placeholder, text: $text)
                         .padding()
                         .background(Color.white)
+                        .foregroundColor(.black)
                         .cornerRadius(12)
                 } else {
                     TextField(placeholder, text: $text)
@@ -130,6 +133,7 @@ struct RegisterFormContent: View {
                         .disableAutocorrection(true)
                         .padding()
                         .background(Color.white)
+                        .foregroundColor(.black)
                         .cornerRadius(12)
                 }
             }

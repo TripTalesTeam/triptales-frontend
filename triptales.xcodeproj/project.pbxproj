@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A04A1DA82DD1003400A92C1C /* Cloudinary in Frameworks */ = {isa = PBXBuildFile; productRef = A04A1DA72DD1003400A92C1C /* Cloudinary */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		28ACABAE2DCD246B004D9E11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A04A1DA82DD1003400A92C1C /* Cloudinary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +125,7 @@
 			);
 			name = triptales;
 			packageProductDependencies = (
+				A04A1DA72DD1003400A92C1C /* Cloudinary */,
 			);
 			productName = triptales;
 			productReference = 28ACAB9D2DCD246B004D9E11 /* triptales.app */;
@@ -204,6 +210,7 @@
 			mainGroup = 28ACAB942DCD246B004D9E11;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				A04A1DA62DD1001800A92C1C /* XCRemoteSwiftPackageReference "cloudinary_ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 28ACAB9E2DCD246B004D9E11 /* Products */;
@@ -566,6 +573,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A04A1DA62DD1001800A92C1C /* XCRemoteSwiftPackageReference "cloudinary_ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cloudinary/cloudinary_ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A04A1DA72DD1003400A92C1C /* Cloudinary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A04A1DA62DD1001800A92C1C /* XCRemoteSwiftPackageReference "cloudinary_ios" */;
+			productName = Cloudinary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 28ACAB952DCD246B004D9E11 /* Project object */;
 }

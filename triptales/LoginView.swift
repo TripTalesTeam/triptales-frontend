@@ -23,6 +23,7 @@ struct LoginFormContent: View {
     @AppStorage("username") var savedUsername = ""
     @AppStorage("email") var savedEmail = ""
     @AppStorage("expireAt") var expireAt = ""
+    @AppStorage("profileImageUrl") var profileImageUrl = ""
     
     var body: some View {
         NavigationView {
@@ -43,6 +44,7 @@ struct LoginFormContent: View {
                     Text("TripTales")
                         .font(.system(size: 32, weight: .bold))
                         .padding(.top, 60)
+                        .foregroundColor(.black)
                     
                     VStack(spacing: 16) {
                         // Username field
@@ -50,6 +52,7 @@ struct LoginFormContent: View {
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
                             .padding()
+                            .foregroundColor(.black)
                             .background(Color.white)
                             .cornerRadius(8)
                             .shadow(color: Color.black.opacity(0.1), radius: 5)
@@ -59,6 +62,7 @@ struct LoginFormContent: View {
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
                             .padding()
+                            .foregroundColor(.black)
                             .background(Color.white)
                             .cornerRadius(8)
                             .shadow(color: Color.black.opacity(0.1), radius: 5)
@@ -90,7 +94,7 @@ struct LoginFormContent: View {
                             NavigationLink(destination:RegisterView()) {
                                 Text("Register?")
                                     .font(.callout)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.blue)
                             }
                             .padding(.trailing, 24)
                             .padding(.top, 8)
@@ -108,7 +112,7 @@ struct LoginFormContent: View {
                     dismissButton: .default(Text("OK"))
                 )
             }
-            .background(Color(UIColor.systemBackground))
+            .background(Color(red: 0.98, green: 0.96, blue: 0.93))
             .navigationBarHidden(true)
             // Navigation link is hidden but activated when login is successful
             .background(
@@ -175,6 +179,7 @@ struct LoginFormContent: View {
                        let user = json["user"] as? [String: Any],
                        let id = user["user_id"] as? String,
                        let uname = user["username"] as? String,
+                       let profilePicURLString = user["profile_image"] as? String,
                        let mail = user["email"] as? String {
                         
                         session.login(token: token, username: uname)
@@ -183,6 +188,7 @@ struct LoginFormContent: View {
                         self.savedUsername = uname
                         self.savedEmail = mail
                         self.expireAt = expire
+                        self.profileImageUrl = profilePicURLString
                         self.isLoggedIn = true
                     } else if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                               let errorMsg = json["error"] as? String {
