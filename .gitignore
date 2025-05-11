@@ -77,6 +77,7 @@ GoogleService-Info.plist
 .env
 *.env
 *.env.*
+*/.env
 
 # Other
 *.orig
