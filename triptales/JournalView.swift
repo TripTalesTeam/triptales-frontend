@@ -85,10 +85,8 @@ struct JournalView: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        Button(action: {
-                            fetchTrips()
-                        }) {
-                            Image(systemName: "arrow.clockwise")
+                        NavigationLink(destination: AddTripTaleView()) {
+                            Image(systemName: "plus")
                                 .font(.title)
                                 .padding()
                                 .background(Color.black)

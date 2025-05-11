@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		289CA2172DD139790097CFEE /* Cloudinary in Frameworks */ = {isa = PBXBuildFile; productRef = 289CA2162DD139790097CFEE /* Cloudinary */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		28ACABAE2DCD246B004D9E11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		28ACABB72DCD246B004D9E11 /* triptalesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = triptalesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		289CA2122DD1301E0097CFEE /* Exceptions for "triptales" folder in "triptales" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 28ACAB9C2DCD246B004D9E11 /* triptales */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		28ACAB9F2DCD246B004D9E11 /* triptales */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				289CA2122DD1301E0097CFEE /* Exceptions for "triptales" folder in "triptales" target */,
+			);
 			path = triptales;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				289CA2172DD139790097CFEE /* Cloudinary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +138,7 @@
 			);
 			name = triptales;
 			packageProductDependencies = (
+				289CA2162DD139790097CFEE /* Cloudinary */,
 			);
 			productName = triptales;
 			productReference = 28ACAB9D2DCD246B004D9E11 /* triptales.app */;
@@ -204,6 +223,7 @@
 			mainGroup = 28ACAB942DCD246B004D9E11;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				289CA2152DD139790097CFEE /* XCRemoteSwiftPackageReference "cloudinary_ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 28ACAB9E2DCD246B004D9E11 /* Products */;
@@ -409,6 +429,7 @@
 				DEVELOPMENT_TEAM = YXZV86X6CL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = triptales/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -439,6 +460,7 @@
 				DEVELOPMENT_TEAM = YXZV86X6CL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = triptales/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -566,6 +588,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		289CA2152DD139790097CFEE /* XCRemoteSwiftPackageReference "cloudinary_ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cloudinary/cloudinary_ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		289CA2162DD139790097CFEE /* Cloudinary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 289CA2152DD139790097CFEE /* XCRemoteSwiftPackageReference "cloudinary_ios" */;
+			productName = Cloudinary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 28ACAB952DCD246B004D9E11 /* Project object */;
 }
