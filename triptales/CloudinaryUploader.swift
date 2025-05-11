@@ -1,11 +1,3 @@
-//
-//  CloudinaryUploader.swift
-//  triptales
-//
-//  Created by Jirasak on 11/5/2568 BE.
-//
-
-
 import Foundation
 import Cloudinary
 import UIKit
@@ -49,4 +41,3 @@ class CloudinaryUploader {
                 }
             }
     }
-}
