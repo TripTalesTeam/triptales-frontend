@@ -10,6 +10,10 @@ import SwiftUI
 struct ProfileView: View {
     @AppStorage("username") var username: String = ""
     @AppStorage("token") var token: String = ""
+    @Environment(\.presentationMode) var presentationMode
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = true
+    @State private var showLogoutAlert = false
+    @EnvironmentObject var session: SessionManager
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -23,6 +27,7 @@ struct ProfileView: View {
                         .resizable()
                         .frame(width: 50, height: 50)
                         .clipShape(Circle())
+                        .foregroundColor(.gray)
                     
                     VStack(alignment: .leading) {
                         Text("Welcome To Your Journal !")
@@ -31,21 +36,49 @@ struct ProfileView: View {
                         Text("Breezy")
                             .font(.headline)
                             .bold()
+                            .foregroundColor(.black)
                     }
                     
                     Spacer()
                     
                     Image(systemName: "bell")
                         .font(.title3)
+                        .foregroundColor(.gray)
                 }
                 .padding()
 
                 // Option List
                 VStack(spacing: 20) {
-                    ProfileRow(icon: "person.crop.circle", label: "Edit Profile")
-                    ProfileRow(icon: "bookmark", label: "Bookmark")
-                    ProfileRow(icon: "person.2.fill", label: "Friends")
-                    ProfileRow(icon: "arrowshape.turn.up.left.fill", label: "Logout")
+                    ProfileRow(icon: "person.crop.circle", label: "Edit Profile", destination: .editProfile)
+                    
+                    Divider()
+                    
+                    ProfileRow(icon: "bookmark", label: "Bookmark", destination: .bookmarks)
+                    
+                    Divider()
+                    
+                    ProfileRow(icon: "person.2.fill", label: "Friends", destination: .friends)
+                    
+                    Divider()
+                    
+                    // Logout row with custom action
+                    Button(action: {
+                        showLogoutAlert = true
+                    }) {
+                        HStack {
+                            Image(systemName: "arrowshape.turn.up.left.fill")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                            Text("Logout")
+                                .font(.body)
+                                .foregroundColor(.black)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.vertical, 10)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .padding(.horizontal)
 
@@ -63,6 +96,18 @@ struct ProfileView: View {
             }
             .ignoresSafeArea()
         }
+        .navigationTitle("Profile")
+        .alert(isPresented: $showLogoutAlert) {
+            Alert(
+                title: Text("Logout"),
+                message: Text("Are you sure you want to logout?"),
+                primaryButton: .destructive(Text("Logout")) {
+                    // Perform logout action
+                    session.logout()
+                },
+                secondaryButton: .cancel()
+            )
+        }
     }
 }
 
@@ -70,19 +115,50 @@ struct ProfileView: View {
 struct ProfileRow: View {
     let icon: String
     let label: String
+    let destination: ProfileDestination
     
     var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .font(.title2)
-            Text(label)
-                .font(.body)
-            Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+        NavigationLink(destination: destinationView()) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(.gray)
+                Text(label)
+                    .font(.body)
+                    .foregroundColor(.black)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+            }
+            .padding(.vertical, 10)
         }
-        .padding(.vertical, 10)
+        .buttonStyle(PlainButtonStyle()) // Removes the default NavigationLink styling
     }
+    
+    @ViewBuilder
+    private func destinationView() -> some View {
+        switch destination {
+        case .editProfile:
+            EmptyView()
+//            EditProfileView()
+        case .bookmarks:
+            EmptyView()
+//            BookmarksView()
+        case .friends:
+            EmptyView()
+//            FriendsView()
+        case .logout:
+            EmptyView() // Logout is handled differently
+        }
+    }
+}
+
+// Enum to represent different profile destinations
+enum ProfileDestination {
+    case editProfile
+    case bookmarks
+    case friends
+    case logout
 }
 
 // MARK: - Tab Bar Item

@@ -1,23 +1,13 @@
-//
-//  triptalesApp.swift
-//  triptales
-//
-//  Created by Jiratchaya Thongsuthum on 9/5/2568 BE.
-//
-
 import SwiftUI
 
 @main
 struct triptalesApp: App {
-    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+    @StateObject var session = SessionManager()
 
     var body: some Scene {
         WindowGroup {
-            if isLoggedIn {
-                MainTabView()
-            } else {
-                LoginView()
-            }
+            RootView()
+                .environmentObject(session)
         }
     }
 }

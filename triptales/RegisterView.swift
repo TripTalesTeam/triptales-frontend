@@ -24,6 +24,7 @@ struct RegisterFormContent: View {
     @State private var profileImage = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @EnvironmentObject var session: SessionManager
     @AppStorage("isLoggedIn") var isRegistered = false
     
     @AppStorage("token") var token = ""
@@ -202,6 +203,8 @@ struct RegisterFormContent: View {
                        let id = user["user_id"] as? String,
                        let uname = user["username"] as? String,
                        let mail = user["email"] as? String {
+                        
+                        session.login(token: token, username: uname)
 
                         self.token = token
                         self.userID = id

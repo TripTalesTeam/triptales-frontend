@@ -10,6 +10,7 @@ struct LoginView: View {
 }
 
 struct LoginFormContent: View {
+    @EnvironmentObject var session: SessionManager
     @State private var username = ""
     @State private var password = ""
     @State private var showAlert = false
@@ -176,6 +177,7 @@ struct LoginFormContent: View {
                        let uname = user["username"] as? String,
                        let mail = user["email"] as? String {
                         
+                        session.login(token: token, username: uname)
                         self.token = token
                         self.userID = id
                         self.savedUsername = uname
