@@ -72,7 +72,7 @@ struct ProfileView: View {
                         Divider()
 
                         // Bookmark Navigation
-                        NavigationLink(destination: EmptyView()) {
+                        NavigationLink(destination: BookmarkView()) {
                             ButtonRow(icon: "bookmark", label: "Bookmark", action: {})
                         }
 
