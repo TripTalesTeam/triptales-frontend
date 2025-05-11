@@ -74,34 +74,6 @@
             ReferencedContainer = "container:triptales.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = ""
-            isEnabled = "NO">
-         </CommandLineArgument>
-      </CommandLineArguments>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CLOUDINARY_CLOUD_NAME"
-            value = "dalrbj6ya"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "CLOUDINARY_API_KEY"
-            value = "582571719312158"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "CLOUDINARY_API_SECRET"
-            value = "IyQCPHWgyk8sXMJEc3R-O1_KAD0"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "BACKEND_URL"
-            value = "https://www.breezejirasak.com"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
