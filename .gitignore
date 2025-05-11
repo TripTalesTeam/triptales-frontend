@@ -1,0 +1,82 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+*.swp
+*.lock
+*.log
+
+# Xcode
+build/
+DerivedData/
+*.xcworkspace
+*.xcuserstate
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# Ignore shared schemes (can contain secrets)
+*.xcscheme
+*.xcodeproj/xcshareddata/xcschemes/
+
+# User-specific project files
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# SwiftPM
+.build/
+Packages/
+Package.resolved
+Package.pins
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+Carthage/DerivedData/
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/Preview.html
+
+# Archives & Signing
+*.xcarchive
+*.xcuserstate
+*.moved-aside
+*.mobileprovision
+*.cer
+*.crt
+*.p12
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# IDEs
+.idea/
+*.iml
+
+# SwiftLint cache
+.swiftlint.cache
+
+# Firebase
+GoogleService-Info.plist
+
+# Environment / Secrets
+.env
+*.env
+*.env.*
+
+# Other
+*.orig

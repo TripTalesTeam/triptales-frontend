@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		289CA2172DD139790097CFEE /* Cloudinary in Frameworks */ = {isa = PBXBuildFile; productRef = 289CA2162DD139790097CFEE /* Cloudinary */; };
+		A04A1E4A2DD1465800A92C1C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = A04A1E492DD1465200A92C1C /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		28ACAB9D2DCD246B004D9E11 /* triptales.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = triptales.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28ACABAD2DCD246B004D9E11 /* triptalesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = triptalesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28ACABB72DCD246B004D9E11 /* triptalesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = triptalesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A04A1E492DD1465200A92C1C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,6 +95,7 @@
 		28ACAB942DCD246B004D9E11 = {
 			isa = PBXGroup;
 			children = (
+				A04A1E492DD1465200A92C1C /* .gitignore */,
 				28ACAB9F2DCD246B004D9E11 /* triptales */,
 				28ACABB02DCD246B004D9E11 /* triptalesTests */,
 				28ACABBA2DCD246B004D9E11 /* triptalesUITests */,
@@ -242,6 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A04A1E4A2DD1465800A92C1C /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
