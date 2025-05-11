@@ -224,6 +224,8 @@ func fetchBookmarkedTrips(token: String, completion: @escaping (Set<String>) -> 
 struct FeedView: View {
     @AppStorage("username") var username: String = ""
     @AppStorage("token") var token: String = ""
+    @AppStorage("profileImageUrl") var profileImageUrl = ""
+    @State private var profileImage: Image? = nil
 
     @StateObject private var viewModel = FeedViewModel()
     @State private var selectedCountry = ""
@@ -234,13 +236,22 @@ struct FeedView: View {
         VStack(spacing: 0) {
             // MARK: Header
             HStack {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    .padding(.leading)
-                    .foregroundColor(.gray)
+                if let image = profileImage {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .padding(.leading)
+                } else {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .padding(.leading)
+                        .foregroundColor(.gray)
+                }
 
                 VStack(alignment: .leading) {
                     Text("Welcome To Your Journal !")
@@ -258,6 +269,9 @@ struct FeedView: View {
                     .foregroundColor(.black)
             }
             .padding(.vertical)
+            .onAppear {
+                loadImageFromURL()
+            }
 
             // MARK: Country Selector
             ScrollView(.horizontal, showsIndicators: false) {
@@ -388,6 +402,23 @@ struct FeedView: View {
         .background(Color(red: 0.98, green: 0.96, blue: 0.93))
         .edgesIgnoringSafeArea(.bottom)
         .navigationBarBackButtonHidden(true)
+    }
+    
+    func loadImageFromURL() {
+        guard let url = URL(string: profileImageUrl), !profileImageUrl.isEmpty else { return }
+
+        // Download image on background thread
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data,
+                  let uiImage = UIImage(data: data) else {
+                return
+            }
+
+            // Update UI on the main thread
+            DispatchQueue.main.async {
+                profileImage = Image(uiImage: uiImage)
+            }
+        }.resume()
     }
 }
 
