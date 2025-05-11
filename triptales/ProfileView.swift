@@ -79,7 +79,7 @@ struct ProfileView: View {
                         Divider()
 
                         // Friends Navigation
-                        NavigationLink(destination: EmptyView()) {
+                        NavigationLink(destination: FriendView()) {
                             ButtonRow(icon: "person.2.fill", label: "Friends", action: {})
                         }
 
