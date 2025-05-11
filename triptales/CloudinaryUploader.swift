@@ -6,22 +6,18 @@ class CloudinaryUploader {
     private let cloudinary: CLDCloudinary
 
     init() {
-        // Get environment variables from ProcessInfo
-        let cloudName = ProcessInfo.processInfo.environment["CLOUDINARY_CLOUD_NAME"] ?? ""
-        let apiKey = ProcessInfo.processInfo.environment["CLOUDINARY_API_KEY"] ?? ""
-        let apiSecret = ProcessInfo.processInfo.environment["CLOUDINARY_API_SECRET"] ?? ""
+        let cloudName = Env.shared.get("CLOUDINARY_CLOUD_NAME") ?? ""
+        let apiKey = Env.shared.get("CLOUDINARY_API_KEY") ?? ""
+        let apiSecret = Env.shared.get("CLOUDINARY_API_SECRET") ?? ""
 
-        // Ensure all values are present
-        assert(!cloudName.isEmpty, "Cloudinary Cloud Name is missing!")
-        assert(!apiKey.isEmpty, "Cloudinary API Key is missing!")
-        assert(!apiSecret.isEmpty, "Cloudinary API Secret is missing!")
+        assert(!cloudName.isEmpty, "Missing CLOUDINARY_CLOUD_NAME in .env")
+        assert(!apiKey.isEmpty, "Missing CLOUDINARY_API_KEY in .env")
+        assert(!apiSecret.isEmpty, "Missing CLOUDINARY_API_SECRET in .env")
 
-        // Initialize Cloudinary with the environment values
         let config = CLDConfiguration(cloudName: cloudName, apiKey: apiKey, apiSecret: apiSecret)
         self.cloudinary = CLDCloudinary(configuration: config)
     }
 
-    // Upload image to Cloudinary and return the URL
     func uploadImage(_ image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(.failure(NSError(domain: "Invalid image data", code: -1, userInfo: nil)))
@@ -41,3 +37,4 @@ class CloudinaryUploader {
                 }
             }
     }
+}

@@ -24,7 +24,7 @@ class FriendViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @AppStorage("userID") var currentUserId = ""
     
-    private let backendURL = ProcessInfo.processInfo.environment["BACKEND_URL"] ?? ""
+    private let backendURL = Env.shared.get("BACKEND_URL") ?? ""
     
     var filteredUsers: [UserProfile] {
         // Filter out the current user
