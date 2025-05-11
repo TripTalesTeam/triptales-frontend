@@ -95,12 +95,12 @@
 		28ACAB942DCD246B004D9E11 = {
 			isa = PBXGroup;
 			children = (
-				A04A1E492DD1465200A92C1C /* .gitignore */,
 				28ACAB9F2DCD246B004D9E11 /* triptales */,
 				28ACABB02DCD246B004D9E11 /* triptalesTests */,
 				28ACABBA2DCD246B004D9E11 /* triptalesUITests */,
 				A016672F2DCE98EC00E9542F /* Frameworks */,
 				28ACAB9E2DCD246B004D9E11 /* Products */,
+				A04A1E492DD1465200A92C1C /* .gitignore */,
 			);
 			sourceTree = "<group>";
 		};
