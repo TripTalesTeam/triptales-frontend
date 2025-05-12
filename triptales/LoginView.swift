@@ -22,7 +22,6 @@ struct LoginFormContent: View {
     @AppStorage("userID") var userID = ""
     @AppStorage("username") var savedUsername = ""
     @AppStorage("email") var savedEmail = ""
-    @AppStorage("expireAt") var expireAt = ""
     @AppStorage("profileImageUrl") var profileImageUrl = ""
     
     var body: some View {
@@ -175,7 +174,6 @@ struct LoginFormContent: View {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let token = json["token"] as? String,
-                       let expire = json["expire_at"] as? String,
                        let user = json["user"] as? [String: Any],
                        let id = user["user_id"] as? String,
                        let uname = user["username"] as? String,
@@ -187,7 +185,6 @@ struct LoginFormContent: View {
                         self.userID = id
                         self.savedUsername = uname
                         self.savedEmail = mail
-                        self.expireAt = expire
                         self.profileImageUrl = profilePicURLString
                         self.isLoggedIn = true
                     } else if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],

@@ -22,7 +22,6 @@ class SessionManager: ObservableObject {
 
         UserDefaults.standard.removeObject(forKey: "userID")
         UserDefaults.standard.removeObject(forKey: "email")
-        UserDefaults.standard.removeObject(forKey: "expireAt")
         UserDefaults.standard.removeObject(forKey: "profileImageUrl")
     }
 }

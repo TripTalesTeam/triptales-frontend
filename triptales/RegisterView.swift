@@ -31,7 +31,6 @@ struct RegisterFormContent: View {
     @AppStorage("userID") var userID = ""
     @AppStorage("username") var savedUsername = ""
     @AppStorage("email") var savedEmail = ""
-    @AppStorage("expireAt") var expireAt = ""
     
     var body: some View {
         ZStack {
@@ -202,7 +201,6 @@ struct RegisterFormContent: View {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let token = json["token"] as? String,
-                       let expire = json["expire_at"] as? String,
                        let user = json["user"] as? [String: Any],
                        let id = user["user_id"] as? String,
                        let uname = user["username"] as? String,
@@ -214,7 +212,6 @@ struct RegisterFormContent: View {
                         self.userID = id
                         self.savedUsername = uname
                         self.savedEmail = mail
-                        self.expireAt = expire
                         self.isRegistered = true
                     } else if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                               let errorMsg = json["error"] as? String {
