@@ -14,8 +14,8 @@ TripTales is a Swift application that allows users to share and explore travel e
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/triptales.git
-cd triptales
+git clone https://github.com/TripTalesTeam/triptales-frontend.git
+cd triptales-frontend
 ```
 
 ### Step 2: Install dependencies
