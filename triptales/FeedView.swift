@@ -263,7 +263,7 @@ struct FeedView: View {
                         .foregroundColor(.black)
                 }
                 Spacer()
-                Image(systemName: "bell")
+                Image("")
                     .font(.title2)
                     .padding(.trailing)
                     .foregroundColor(.black)
@@ -318,7 +318,7 @@ struct FeedView: View {
                                 } placeholder: {
                                     Color.gray.opacity(0.3)
                                 }
-                                .frame(width: 350, height: 380)
+                                .frame(width: 350, height: 370)
                                 .cornerRadius(16)
                                 .clipped()
                             }
@@ -328,8 +328,19 @@ struct FeedView: View {
                                     
                                     
                                     HStack {
-                                        Image(systemName: "person.circle.fill")
-                                            .foregroundColor(.gray)
+                                        AsyncImage(url: URL(string: trip.user.profile_image)) { image in
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 24, height: 24)
+                                                .clipShape(Circle())
+                                        } placeholder: {
+                                            Image(systemName: "person.circle.fill")
+                                                .foregroundColor(.gray)
+                                                .frame(width: 24, height: 24)
+                                                .clipShape(Circle())
+                                        }
+                                        
                                         Text(trip.user.username)
                                             .font(.subheadline)
                                             .foregroundColor(.gray)

@@ -13,72 +13,95 @@ struct JournalTripDetailView: View {
     @State private var errorMessage: String?
     @AppStorage("token") var token: String = ""
     @State private var bookmarkedTripIDs: Set<String> = []
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        VStack {
-            if isLoading {
-                ProgressView("Loading...")
-            } else if let trip = tripDetail {
-                ScrollView {
-                    VStack(alignment: .leading) {
+        ZStack {
+            Color(red: 0.98, green: 0.96, blue: 0.93)
+                .edgesIgnoringSafeArea(.all)
+            VStack {
+                HeaderView(title: "My TripTales @\(tripDetail?.country.name ?? "")") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                if isLoading {
+                    ScrollView {
+                        ProgressView("Loading...")
+                            .foregroundColor(.black)
+                            .padding()
+                    }
+                } else if let trip = tripDetail {
+                    ScrollView {
                         VStack(alignment: .leading) {
-                            ZStack(alignment: .topLeading) {
-                                AsyncImage(url: URL(string: trip.image)) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                } placeholder: {
-                                    Color.gray.opacity(0.3)
+                            VStack(alignment: .leading) {
+                                ZStack(alignment: .topLeading) {
+                                    AsyncImage(url: URL(string: trip.image)) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    } placeholder: {
+                                        Color.gray.opacity(0.3)
+                                    }
+                                    .frame(width: 370, height: 380)
+                                    .cornerRadius(16)
+                                    .clipped()
                                 }
-                                .frame(width: 370, height: 380)
-                                .cornerRadius(16)
-                                .clipped()
-                            }
-
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
+                                
+                                VStack(alignment: .leading, spacing: 8) {
                                     HStack {
-                                        Image(systemName: "person.circle.fill")
+                                        HStack {
+                                            AsyncImage(url: URL(string: trip.user.profile_image)) { image in
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 24, height: 24)
+                                                    .clipShape(Circle())
+                                            } placeholder: {
+                                                Image(systemName: "person.circle.fill")
+                                                    .foregroundColor(.gray)
+                                                    .frame(width: 24, height: 24)
+                                                    .clipShape(Circle())
+                                            }
+                                            Text(trip.user.username)
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                        }
+                                        Spacer()
+                                    }
+                                    
+                                    Text(trip.title)
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                        .bold()
+                                    
+                                    Text(trip.description)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                    
+                                    HStack {
+                                        Image(systemName: "mappin.and.ellipse")
                                             .foregroundColor(.gray)
-                                        Text(trip.user.username)
-                                            .font(.subheadline)
+                                        Text(trip.country.name)
+                                            .font(.caption)
                                             .foregroundColor(.gray)
                                     }
-                                    Spacer()
                                 }
-
-                                Text(trip.title)
-                                    .font(.headline)
-                                    .foregroundColor(.black)
-                                    .bold()
-
-                                Text(trip.description)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-
-                                HStack {
-                                    Image(systemName: "mappin.and.ellipse")
-                                        .foregroundColor(.gray)
-                                    Text(trip.country.name)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 5)
                             }
                             .padding()
-                            .background(Color.white)
-                            .cornerRadius(16)
-                            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 5)
                         }
-                        .padding()
+                    }
+                } else if let error = errorMessage {
+                    ScrollView {
+                        Text(error).foregroundColor(.red)
                     }
                 }
-            } else if let error = errorMessage {
-                Text(error).foregroundColor(.red)
             }
         }
         .background(Color(red: 0.98, green: 0.96, blue: 0.93))
-        .navigationTitle("My TripTales @\(tripDetail?.country.name ?? "")")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .onAppear(perform: fetchTripDetail)
     }
 

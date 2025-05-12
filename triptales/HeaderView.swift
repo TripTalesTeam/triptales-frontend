@@ -28,7 +28,7 @@ struct HeaderView: View {
 
             Spacer()
 
-            Image(systemName: "bell")
+            Image("")
                 .foregroundColor(.black)
                 .padding()
         }

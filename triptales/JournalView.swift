@@ -98,9 +98,9 @@ struct JournalView: View {
                 }
 
                 if isLoading {
-                    ProgressView("Loading...")
+                    ProgressView()
                         .padding()
-                        .background(Color.white)
+                        .foregroundColor(.black)
                         .cornerRadius(10)
                 }
 
@@ -112,7 +112,7 @@ struct JournalView: View {
                             .padding()
                             .background(Color.white)
                             .cornerRadius(10)
-                            .padding(.bottom, 20)
+                            .padding(.bottom, 100)
                     }
                 }
             }

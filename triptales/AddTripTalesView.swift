@@ -101,6 +101,7 @@ struct AddTripTaleView: View {
     @State private var selectedUIImage: UIImage? = nil
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     @State private var showPhotoSourceDialog: Bool = false
+    @State private var isLoading: Bool = false
 
     @StateObject private var locationManager = LocationManager()
 
@@ -108,163 +109,189 @@ struct AddTripTaleView: View {
         if let uiImage = selectedUIImage {
             return Image(uiImage: uiImage)
         } else {
-            return Image("hokkaido")
+            return nil
         }
     }
-
+    
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading) {
-                    // MARK: - Image Section
-                    ZStack(alignment: .bottomTrailing) {
-                        displayedImage?
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 250)
-                            .clipped()
-                            .cornerRadius(16)
-                            .padding(.horizontal)
-
-                        Button(action: {
-                            showPhotoSourceDialog = true
-                        }) {
-                            Image(systemName: "camera.fill")
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color.black.opacity(0.7))
-                                .clipShape(Circle())
+        ZStack {
+            VStack {
+                HeaderView(title: "Add My TripTales") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        // MARK: - Image Section
+                        ZStack(alignment: .bottomTrailing) {
+                            if let image = displayedImage {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 250)
+                                    .clipped()
+                                    .cornerRadius(16)
+                                    .padding(.horizontal)
+                            } else {
+                                // Placeholder
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(height: 250)
+                                    .overlay(
+                                        VStack {
+                                            Image(systemName: "photo.on.rectangle")
+                                                .font(.system(size: 40))
+                                                .foregroundColor(.gray)
+                                            Text("No Image Selected")
+                                                .foregroundColor(.gray)
+                                                .font(.body)
+                                        }
+                                    )
+                                    .padding(.horizontal)
+                            }
+                            
+                            // Camera Button
+                            Button(action: {
+                                showPhotoSourceDialog = true
+                            }) {
+                                Image(systemName: "camera.fill")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color.black.opacity(0.7))
+                                    .clipShape(Circle())
+                            }
+                            .padding(.trailing, 32)
+                            .padding(.bottom, 16)
                         }
-                        .padding(.trailing, 32)
-                        .padding(.bottom, 16)
-                    }
-
-                    // MARK: - Title
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Trip Title")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        TextField("e.g. Hokkaido Adventure", text: $title)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
-                            .padding(.horizontal)
-                    }
-
-                    // MARK: - Description
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Description")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        ZStack(alignment: .topLeading) {
-                            TextEditor(text: $description)
-                                .frame(height: 120)
+                        
+                        
+                        // MARK: - Title
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Trip Title")
+                                .font(.headline)
+                                .padding(.horizontal)
+                                .foregroundColor(.black)
+                            
+                            TextField("", text: $title)
                                 .padding()
                                 .background(Color.white)
+                                .foregroundColor(.black)
                                 .cornerRadius(10)
                                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
                                 .padding(.horizontal)
-
-                            if description.isEmpty {
-                                Text("Write a short description...")
-                                    .foregroundColor(.gray)
-                                    .padding(.leading, 26)
-                                    .padding(.top, 22)
-                            }
                         }
-                    }
-
-                    // MARK: - Static Location (now dynamic)
-                    HStack {
-                        Image(systemName: "mappin.circle.fill")
-                            .foregroundColor(.gray)
-                        Text(locationManager.locationName)
-                            .foregroundColor(.gray)
-                            .font(.subheadline)
-                    }
-                    .padding(.horizontal)
-
-                    // MARK: - Travel Companions
-                    VStack(alignment: .leading) {
-                        Text("Travel Companions")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 20) {
-                                ForEach(companions, id: \.friend_id) { companion in
-                                    VStack {
-                                        Image(systemName: "person.crop.circle.fill")
-                                            .resizable()
-                                            .frame(width: 60, height: 60)
-                                            .clipShape(Circle())
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(selectedCompanions.contains(companion.friend_id) ? Color.orange : Color.clear, lineWidth: 3)
-                                            )
-                                            .onTapGesture {
-                                                if selectedCompanions.contains(companion.friend_id) {
-                                                    selectedCompanions.remove(companion.friend_id)
-                                                } else {
-                                                    selectedCompanions.insert(companion.friend_id)
+                        
+                        // MARK: - Description
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Description")
+                                .font(.headline)
+                                .padding(.horizontal)
+                                .foregroundColor(.black)
+                            
+                            
+                            TextEditor(text: $description)
+                                .frame(height: 120)
+                                .padding(10)
+                                .background(Color.white)
+                                .foregroundColor(.black)
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.gray.opacity(0.3))
+                                )
+                                .padding(.horizontal)
+                            
+                        }
+                        
+                        // MARK: - Static Location (now dynamic)
+                        HStack {
+                            Image(systemName: "mappin.circle.fill")
+                                .foregroundColor(.gray)
+                            Text(locationManager.locationName)
+                                .foregroundColor(.gray)
+                                .font(.subheadline)
+                        }
+                        .padding(.horizontal)
+                        
+                        // MARK: - Travel Companions
+                        VStack(alignment: .leading) {
+                            Text("Travel Companions")
+                                .font(.headline)
+                                .padding(.horizontal)
+                                .foregroundColor(.black)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 20) {
+                                    ForEach(companions, id: \.friend_id) { companion in
+                                        VStack {
+                                            Image(systemName: "person.crop.circle.fill")
+                                                .resizable()
+                                                .foregroundColor(.gray)
+                                                .frame(width: 60, height: 60)
+                                                .clipShape(Circle())
+                                                .overlay(
+                                                    Circle()
+                                                        .stroke(selectedCompanions.contains(companion.friend_id) ? Color.orange : Color.clear, lineWidth: 3)
+                                                )
+                                                .onTapGesture {
+                                                    if selectedCompanions.contains(companion.friend_id) {
+                                                        selectedCompanions.remove(companion.friend_id)
+                                                    } else {
+                                                        selectedCompanions.insert(companion.friend_id)
+                                                    }
                                                 }
-                                            }
-
-                                        Text(companion.friend.username)
-                                            .font(.caption2)
-                                            .foregroundColor(.primary)
+                                            
+                                            Text(companion.friend.username)
+                                                .font(.caption2)
+                                                .foregroundColor(.black)
+                                        }
                                     }
                                 }
+                                .padding(.horizontal)
                             }
+                        }
+                        .padding(.top)
+                        
+                        Button(action: {
+                            submitTripTale()
+                        }) {
+                            HStack {
+                                Image(systemName: "paperplane.fill")
+                                Text("Submit Trip Tale")
+                                    .fontWeight(.semibold)
+                            }
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(12)
                             .padding(.horizontal)
                         }
-                    }
-
-                    // MARK: - Location Coordinates
-                    VStack(alignment: .leading) {
-                        Text("Location Coordinates")
-                            .font(.headline)
-                            .padding(.horizontal)
-
-                        if let latitude = locationManager.latitude,
-                           let longitude = locationManager.longitude {
-                            Text("Latitude: \(latitude)")
-                                .padding(.horizontal)
-                            Text("Longitude: \(longitude)")
-                                .padding(.horizontal)
-                        } else {
-                            Text(locationManager.locationError ?? "Fetching location...")
-                                .foregroundColor(.red)
-                                .padding(.horizontal)
-                        }
+                        .padding(.bottom, 20)
                     }
                     .padding(.top)
-
-                    Button(action: {
-                        submitTripTale()
-                    }) {
-                        HStack {
-                            Image(systemName: "paperplane.fill")
-                            Text("Submit Trip Tale")
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color("ButtonBlue"))
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .padding(.bottom, 20)
                 }
-                .padding(.top)
+                .scrollDismissesKeyboard(.interactively)
             }
+            if isLoading {
+                Color.black.opacity(0.4) // Dimmed background
+                    .edgesIgnoringSafeArea(.all)
+                    .zIndex(1)
+
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .orange))
+                        .scaleEffect(2)
+                        .padding(50)
+                        .background(Color.white)
+                        .cornerRadius(15)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .zIndex(2)
+            }
+        }
+        
             .background(Color(red: 0.98, green: 0.96, blue: 0.93).ignoresSafeArea())
-            .navigationTitle("Add My TripTales")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .onAppear {
                 fetchFriendList()
                 locationManager.checkLocationAuthorization()
@@ -284,7 +311,6 @@ struct AddTripTaleView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
-    }
 
     func fetchFriendList() {
         guard let url = URL(string: "https://www.breezejirasak.com/api/friends") else {
@@ -323,14 +349,20 @@ struct AddTripTaleView: View {
     
     func submitTripTale() {
         print("submitTripTale() called")
+        isLoading = true
+        print("Loading started...")
 
         guard !title.isEmpty, !description.isEmpty else {
-            print("Validation failed: Title and description are required.")
+            print("Validation failed: Title or Description is empty")
+            isLoading = false
+            print("Loading stopped due to validation failure")
             return
         }
 
         if locationManager.locationName.isEmpty {
-            print("Validation failed: Location name is empty.")
+            print("Validation failed: Location name is empty")
+            isLoading = false
+            print("Loading stopped due to missing location name")
             return
         }
 
@@ -340,11 +372,13 @@ struct AddTripTaleView: View {
 
         guard let encodedCountryName = countryName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let countryURL = URL(string: "https://www.breezejirasak.com/api/countries/by-name?name=\(encodedCountryName)") else {
-            print("Invalid country URL with name: \(countryName)")
+            print("Failed to create valid URL for country API")
+            isLoading = false
+            print("Loading stopped due to invalid country URL")
             return
         }
 
-        print("Fetching country from URL: \(countryURL)")
+        print("Sending GET request to country API: \(countryURL)")
 
         var countryRequest = URLRequest(url: countryURL)
         countryRequest.httpMethod = "GET"
@@ -356,16 +390,20 @@ struct AddTripTaleView: View {
 
         session.dataTask(with: countryRequest) { data, response, error in
             if let error = error {
-                print("Country fetch error: \(error.localizedDescription)")
+                print("Country API error: \(error.localizedDescription)")
+                isLoading = false
+                print("Loading stopped due to API error")
                 return
             }
 
             if let httpResponse = response as? HTTPURLResponse {
-                print("Country fetch HTTP status: \(httpResponse.statusCode)")
+                print("Country API status code: \(httpResponse.statusCode)")
             }
 
             guard let data = data else {
                 print("No data returned from country API")
+                isLoading = false
+                print("Loading stopped due to empty country API response")
                 return
             }
 
@@ -374,19 +412,20 @@ struct AddTripTaleView: View {
             }
 
             guard let country = try? JSONDecoder().decode(CountryResponse.self, from: data) else {
-                print("Failed to decode country response")
+                print("Failed to decode country JSON")
+                isLoading = false
+                print("Loading stopped due to decode error")
                 return
             }
 
-            print("Fetched country: \(country)")
+            print("Successfully decoded country: \(country)")
 
             if let image = selectedUIImage {
-                print("Uploading image to Cloudinary...")
-
+                print("Uploading selected image to Cloudinary...")
                 CloudinaryUploader().uploadImage(image) { result in
                     switch result {
                     case .success(let imageUrl):
-                        print("Image uploaded successfully. URL: \(imageUrl)")
+                        print("Image uploaded. URL: \(imageUrl)")
 
                         let tripData = AddTripRequest(
                             title: title,
@@ -397,76 +436,84 @@ struct AddTripTaleView: View {
                             country_id: country.country_id
                         )
 
-                        print("Prepared trip data: \(tripData)")
-
                         guard let postURL = URL(string: "https://www.breezejirasak.com/api/trips"),
                               let encoded = try? JSONEncoder().encode(tripData) else {
                             print("Failed to encode trip data")
+                            isLoading = false
+                            print("Loading stopped due to encoding failure")
                             return
                         }
+
+                        print("Sending POST request to: \(postURL)")
 
                         var postRequest = URLRequest(url: postURL)
                         postRequest.httpMethod = "POST"
                         postRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                         postRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
                         postRequest.httpBody = encoded
+                        
+                        // Create a custom session configuration
+                        let config = URLSessionConfiguration.default
+                        config.httpAdditionalHeaders = ["Authorization": "Bearer \(token)"]
+                        
+                        // Create a session with this configuration
+                        let session = URLSession(configuration: config)
+                        
+                        session.dataTask(with: postRequest) { data, response, error in
+                            defer {
+                                isLoading = false
+                                print("Loading stopped after POST request")
+                            }
 
-                        print("Sending POST request to \(postURL)")
-
-                        let postConfig = URLSessionConfiguration.default
-                        postConfig.httpAdditionalHeaders = ["Authorization": "Bearer \(token)"]
-                        let postSession = URLSession(configuration: postConfig)
-
-                        postSession.dataTask(with: postRequest) { data, response, error in
                             if let error = error {
-                                print("Submission error: \(error.localizedDescription)")
+                                print("POST request error: \(error.localizedDescription)")
                                 return
                             }
 
-                            if let httpResponse = response as? HTTPURLResponse {
-                                print("POST response HTTP status: \(httpResponse.statusCode)")
-                            }
-
-                            // Safely unwrap `data` before using it
                             guard let data = data else {
-                                print("No data returned from trip submission")
+                                print("No data returned from POST request")
                                 return
                             }
 
                             if let responseString = String(data: data, encoding: .utf8) {
-                                print("POST response body: \(responseString)")
+                                print("Trip POST response: \(responseString)")
                             }
 
-                            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 {
-                                // Trip created successfully, now extract trip_id and add companions
-                                do {
-                                    let tripResponse = try JSONDecoder().decode(TripResponse.self, from: data)
-                                    let tripId = tripResponse.trip_id
-                                    if !tripId.isEmpty {
+                            if let httpResponse = response as? HTTPURLResponse {
+                                print("Trip POST status code: \(httpResponse.statusCode)")
+                                if httpResponse.statusCode == 201 {
+                                    do {
+                                        let tripResponse = try JSONDecoder().decode(TripResponse.self, from: data)
+                                        let tripId = tripResponse.trip_id
                                         print("Trip created with ID: \(tripId)")
 
-                                        // Now, add companions one by one
-                                        print("Selected companions", selectedCompanions)
-                                        for friendId in selectedCompanions {
-                                            self.addCompanionToTrip(tripId: tripId, friendId: friendId)
+                                        if !tripId.isEmpty {
+                                            print("Adding companions: \(selectedCompanions)")
+                                            for friendId in selectedCompanions {
+                                                self.addCompanionToTrip(tripId: tripId, friendId: friendId)
+                                            }
                                         }
-                                    } else {
-                                        print("Failed to parse trip response or trip_id")
+                                    } catch {
+                                        print("Failed to decode trip response: \(error.localizedDescription)")
                                     }
-                                } catch {
-                                    print("Failed to decode trip response: \(error.localizedDescription)")
+                                } else {
+                                    print("Trip POST failed with status code: \(httpResponse.statusCode)")
                                 }
-                            } else {
-                                print("Unexpected server response on trip submission")
                             }
+
                         }.resume()
 
                     case .failure(let error):
                         print("Image upload failed: \(error.localizedDescription)")
+                        isLoading = false
+                        print("Loading stopped due to image upload failure")
                     }
                 }
+
             } else {
-                print("No image selected, skipping upload")
+                print("No image selected. Skipping upload.")
+                isLoading = false
+                print("Loading stopped due to missing image")
             }
 
         }.resume()
@@ -521,6 +568,11 @@ struct AddTripTaleView: View {
             } else {
                 print("Unexpected server response on adding companion")
             }
+            DispatchQueue.main.async {
+                print("Submission succeeded, navigating back")
+                self.presentationMode.wrappedValue.dismiss()
+            }
+
         }.resume()
     }
 }

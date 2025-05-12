@@ -22,8 +22,10 @@ struct ProfileView: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottom) {
-                Color(red: 1.0, green: 0.94, blue: 0.92)
-                    .ignoresSafeArea()
+//                Color(red: 1.0, green: 0.94, blue: 0.92)
+//                    .ignoresSafeArea()
+                Color(red: 0.98, green: 0.96, blue: 0.93)
+                    .edgesIgnoringSafeArea(.all)
 
                 VStack(alignment: .leading, spacing: 20) {
                     // Top Bar
@@ -53,7 +55,7 @@ struct ProfileView: View {
 
                         Spacer()
 
-                        Image(systemName: "bell")
+                        Image("")
                             .font(.title3)
                             .foregroundColor(.gray)
                     }
@@ -109,16 +111,16 @@ struct ProfileView: View {
                     Spacer()
                 }
 
-                // Bottom Decoration
-                VStack {
-                    Spacer()
-                    Circle()
-                        .fill(Color.orange)
-                        .scaleEffect(x: 2.0, y: 1.0)
-                        .frame(height: 200)
-                        .offset(y: 100)
-                }
-                .ignoresSafeArea()
+//                // Bottom Decoration
+//                VStack {
+//                    Spacer()
+//                    Circle()
+//                        .fill(Color.orange)
+//                        .scaleEffect(x: 2.0, y: 1.0)
+//                        .frame(height: 200)
+//                        .offset(y: 100)
+//                }
+//                .ignoresSafeArea()
             }
             .navigationBarBackButtonHidden(true)
             .alert(isPresented: $showLogoutAlert) {
